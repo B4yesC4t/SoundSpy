@@ -1,0 +1,5 @@
+管理员启动powershell
+执行：Set-ExecutionPolicy Unrestricted
+使ps1脚本可以任意执行
+
+[System.Console]::Beep(1000,1000)
