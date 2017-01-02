@@ -3,6 +3,7 @@
 import sys
 import time
 import argparse
+from gooey import Gooey, GooeyParser
 
 
 sleep_time = 0.2  # s
@@ -52,15 +53,40 @@ def bin2sound(bin, model):
 
 
 def handle_arg():
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('-f', action="store", dest="file", help="Target txt file.")
-    parser.add_argument('-m',  action='store', dest='model', default=0, type=int, choices=[0, 1],
-                        help='Play model. \n\t\t0 for playing with different time\n\t\t1 for playing with different frequent.')
-    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
+    mparser = argparse.ArgumentParser(description='Read file and play Beep.')
+    mparser.add_argument('-s', action="store", dest="start", choices=["c", "g"], default='g',
+                        help="Start model.\n'c' for start with command.\n'g' for start with gui.")
+    mparser.add_argument('-f', action="store", dest="file", help="Target txt file.")
+    mparser.add_argument('-m', '--model',  default="t", type=str, choices=["t", "f"],
+                        help='Play model. \n\t\tt for playing with different time\n\t\tf for playing with different frequency.')
+    mparser.add_argument('--version', action='version', version='%(prog)s 1.0')
+    margs = mparser.parse_args()
+    if margs.start == "g":
+        gui_arg()
+    else:
+        if margs.file:
+            print "Target is %s." % margs.file
+            model = margs.model
+            try:
+                fp = open(margs.file)
+                content = fp.read()
+                fp.close()
+                bin = str2bin(content)
+                bin2sound(bin, model)
+            except:
+                pass
+
+
+@Gooey(program_name="Attack!!!", language="chinese")
+def gui_arg():
+    parser = GooeyParser(description='Read file and play Beep.')
+    parser.add_argument('-f', '--file', widget="FileChooser")
+    parser.add_argument('-m', '--model',  default="t", type=str, choices=["t", "f"],
+                        help='Play model. \n\t\tt for playing with different time\n\t\tf for playing with different frequency.')
     args = parser.parse_args()
     if args.file:
         print "Target is %s." % args.file
-        model = args.model
+        model = 0 if args.model == "time" else 1
         try:
             fp = open(args.file)
             content = fp.read()
@@ -70,6 +96,8 @@ def handle_arg():
         except:
             pass
 
+
 if __name__ == "__main__":
     # print str2bin("name")
     handle_arg()
+    # gui_arg()
